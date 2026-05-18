@@ -11,8 +11,9 @@ async function startServer() {
 
   app.use(express.json());
 
-  // API endpoints
-  app.get("/api/mcp", (req, res) => {
+  // API endpoints for MCP / Agent
+  const mcpHandlerGet = (req: any, res: any) => {
+    res.set('Access-Control-Allow-Origin', '*');
     res.json({
       protocol: "MCP",
       version: "1.0.0",
@@ -22,24 +23,82 @@ async function startServer() {
       capabilities: ["real-time-operations", "warp-mechanics", "dynamic-content-management"],
       timestamp: new Date().toISOString()
     });
-  });
+  };
 
-  app.post("/api/mcp", (req, res) => {
+  const mcpHandlerPost = (req: any, res: any) => {
+    res.set({
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+    });
     try {
-      const body = req.body;
+      const body = req.body || {};
+      const id = body.id || null;
+      
+      if (body.method === 'initialize') {
+        return res.json({
+          jsonrpc: '2.0',
+          id,
+          result: {
+            protocolVersion: '2024-11-05',
+            capabilities: { tools: {}, prompts: {}, resources: {} },
+            serverInfo: { name: 'WarpReal MCP Endpoint', version: '1.0.0' }
+          }
+        });
+      }
+
+      if (body.method === 'tools/list') {
+        return res.json({
+          jsonrpc: '2.0',
+          id,
+          result: {
+            tools: [
+              { name: 'get_race_status', description: 'Get the current running race status.', inputSchema: { type: 'object', properties: {} } },
+              { name: 'start_race', description: 'Start a new race.', inputSchema: { type: 'object', properties: {} } },
+              { name: 'get_leaderboard', description: 'Retrieve the current leaderboard.', inputSchema: { type: 'object', properties: {} } },
+              { name: 'optimize_speed', description: 'Optimize speed parameters.', inputSchema: { type: 'object', properties: {} } },
+              { name: 'get_track_info', description: 'Get track information.', inputSchema: { type: 'object', properties: {} } }
+            ]
+          }
+        });
+      }
+
+      if (body.method === 'tools/call') {
+        const toolName = body.params?.name;
+        return res.json({
+          jsonrpc: '2.0',
+          id,
+          result: {
+            content: [{ type: 'text', text: `Tool ${toolName} executed successfully. [PLACEHOLDER for actual implementation]` }]
+          }
+        });
+      }
+
+      if (body.method === 'prompts/list') {
+        return res.json({ jsonrpc: '2.0', id, result: { prompts: [] } });
+      }
+
+      if (body.method === 'resources/list') {
+        return res.json({ jsonrpc: '2.0', id, result: { resources: [] } });
+      }
+
       res.json({
-        status: "success",
-        message: "MCP command received",
-        agent: "WarpReal Orchestrator",
-        receivedAt: new Date().toISOString(),
-        payload: body
+        jsonrpc: '2.0',
+        id,
+        result: {
+          status: "success",
+          message: "MCP command received",
+          agent: "WarpReal Orchestrator",
+          receivedAt: new Date().toISOString(),
+          payload: body
+        }
       });
     } catch (error) {
-      res.status(400).json({ error: "Invalid MCP request" });
+      res.status(400).json({ jsonrpc: '2.0', error: { code: -32700, message: "Parse error" } });
     }
-  });
+  };
 
-  app.get("/api/agent", (req, res) => {
+  const agentHandlerGet = (req: any, res: any) => {
     res.json({
       name: "WarpReal Orchestrator",
       status: "active",
@@ -47,7 +106,49 @@ async function startServer() {
       platform: "WarpReal",
       version: "1.0.0"
     });
+  };
+
+  const agentHandlerPost = (req: any, res: any) => {
+    try {
+      const body = req.body || {};
+      res.json({
+        status: "success",
+        message: "Agent operational command received",
+        agent: "WarpReal Orchestrator",
+        receivedAt: new Date().toISOString(),
+        payload: body
+      });
+    } catch (error) {
+      res.status(400).json({ error: "Invalid Agent request" });
+    }
+  };
+
+  app.get("/api/mcp", mcpHandlerGet);
+  app.post("/api/mcp", mcpHandlerPost);
+  app.options("/api/mcp", (req, res) => {
+    res.set({
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+    });
+    res.status(204).end();
   });
+
+  app.get("/app/api/mcp", mcpHandlerGet);
+  app.post("/app/api/mcp", mcpHandlerPost);
+  app.options("/app/api/mcp", (req, res) => {
+    res.set({
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+    });
+    res.status(204).end();
+  });
+
+  app.get("/api/agent", agentHandlerGet);
+  app.post("/api/agent", agentHandlerPost);
+  app.get("/app/api/agent", agentHandlerGet);
+  app.post("/app/api/agent", agentHandlerPost);
 
   // Vite middleware for development
   if (process.env.NODE_ENV !== "production") {
