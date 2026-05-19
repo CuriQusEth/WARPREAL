@@ -1,15 +1,7 @@
 import { NextResponse } from 'next/server';
 
 export async function GET() {
-  return NextResponse.json({
-    protocol: "MCP",
-    version: "1.0.0",
-    name: "WarpReal MCP Endpoint",
-    status: "active",
-    description: "Active MCP server for WarpReal Orchestrator Agent",
-    capabilities: ["real-time-operations", "warp-mechanics", "dynamic-content-management"],
-    timestamp: new Date().toISOString()
-  });
+  return NextResponse.json({ status: "MCP Server Active. Use POST for JSON-RPC." }, { headers: getCorsHeaders() });
 }
 
 const TOOLS = [

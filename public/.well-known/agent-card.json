@@ -37,22 +37,27 @@
   ],
   "skills": [
     {
+      "id": "get_race_status",
       "name": "get_race_status",
       "description": "Get the current running race status."
     },
     {
+      "id": "start_race",
       "name": "start_race",
       "description": "Start a new race."
     },
     {
+      "id": "get_leaderboard",
       "name": "get_leaderboard",
       "description": "Retrieve the current leaderboard."
     },
     {
+      "id": "optimize_speed",
       "name": "optimize_speed",
       "description": "Optimize speed parameters."
     },
     {
+      "id": "get_track_info",
       "name": "get_track_info",
       "description": "Get track information."
     }
