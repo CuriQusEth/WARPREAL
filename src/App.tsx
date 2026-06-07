@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { WagmiProvider, useAccount, useSendCalls, useCapabilities } from 'wagmi';
+import { WagmiProvider, useAccount, useSendTransaction } from 'wagmi';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { stringToHex } from 'viem';
 import { Sun } from 'lucide-react';
@@ -26,34 +26,14 @@ function GameApp() {
   const [isWarping, setIsWarping] = useState(false);
 
   // GM Transaction logic
-  const { isConnected, address } = useAccount();
-  const { sendCalls, error: sendCallsError, isError } = useSendCalls();
+  const { isConnected } = useAccount();
+  const { sendTransaction } = useSendTransaction();
 
-  React.useEffect(() => {
-    if (isError) {
-      console.error("sendCalls Error:", sendCallsError);
-    }
-  }, [isError, sendCallsError]);
-
-  const { data: capabilities } = useCapabilities({ account: address });
-
-  const sendGMTransaction = async () => {
-    // Use our internal proxy endpoint to keep the key safe.
-    // The wallet requires an absolute URL for the paymaster service.
-    const paymasterServiceUrl = `${window.location.origin}/api/paymaster`;
-
-    sendCalls({
-      chainId: 8453,
-      calls: [{
-        to: '0xcD0dd3716C5561De47a24949335dF8a8CD8F71a3',
-        value: 0n,
-        data: stringToHex('gm'),
-      }],
-      capabilities: {
-        paymasterService: {
-          url: paymasterServiceUrl
-        }
-      },
+  const sendGMTransaction = () => {
+    sendTransaction({
+      to: '0xcD0dd3716C5561De47a24949335dF8a8CD8F71a3',
+      value: 0n,
+      data: stringToHex('gm'),
     });
   };
 
