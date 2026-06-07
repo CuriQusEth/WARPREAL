@@ -123,6 +123,26 @@ async function startServer() {
     }
   };
 
+  app.post("/api/paymaster", async (req, res) => {
+    try {
+      const paymasterUrl = "https://api.developer.coinbase.com/rpc/v1/base/leLFnweOIe3IS05mdklyuy59QDLWVCas";
+      
+      const response = await fetch(paymasterUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(req.body),
+      });
+
+      const data = await response.json();
+      res.json(data);
+    } catch (error) {
+      console.error("Paymaster Proxy Error:", error);
+      res.status(500).json({ error: "Paymaster error" });
+    }
+  });
+
   app.get("/api/mcp", mcpHandlerGet);
   app.post("/api/mcp", mcpHandlerPost);
   app.options("/api/mcp", (req, res) => {
