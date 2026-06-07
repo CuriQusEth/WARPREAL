@@ -27,23 +27,20 @@ function GameApp() {
 
   // GM Transaction logic
   const { isConnected, address } = useAccount();
-  const { sendCalls } = useSendCalls();
+  const { sendCalls, error: sendCallsError, isError } = useSendCalls();
+
+  React.useEffect(() => {
+    if (isError) {
+      console.error("sendCalls Error:", sendCallsError);
+    }
+  }, [isError, sendCallsError]);
+
   const { data: capabilities } = useCapabilities({ account: address });
 
   const sendGMTransaction = async () => {
     // Use our internal proxy endpoint to keep the key safe.
-    // The wallet extension requires an absolute URL for the paymaster service.
+    // The wallet requires an absolute URL for the paymaster service.
     const paymasterServiceUrl = `${window.location.origin}/api/paymaster`;
-
-    // Check if the wallet supports Paymaster on Base Mainnet (8453)
-    const baseCapabilities = capabilities?.[8453];
-    const hasPaymaster = baseCapabilities?.paymasterService?.supported;
-
-    const capabilitiesConfig = hasPaymaster ? {
-      paymasterService: {
-        url: paymasterServiceUrl
-      }
-    } : undefined;
 
     sendCalls({
       chainId: 8453,
@@ -52,7 +49,11 @@ function GameApp() {
         value: 0n,
         data: stringToHex('gm'),
       }],
-      capabilities: capabilitiesConfig,
+      capabilities: {
+        paymasterService: {
+          url: paymasterServiceUrl
+        }
+      },
     });
   };
 

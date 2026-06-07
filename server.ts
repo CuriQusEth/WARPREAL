@@ -123,7 +123,21 @@ async function startServer() {
     }
   };
 
+  app.options("/api/paymaster", (req, res) => {
+    res.set({
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+    });
+    res.status(204).end();
+  });
+
   app.post("/api/paymaster", async (req, res) => {
+    res.set({
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+    });
     try {
       const paymasterUrl = "https://api.developer.coinbase.com/rpc/v1/base/leLFnweOIe3IS05mdklyuy59QDLWVCas";
       
