@@ -31,8 +31,9 @@ function GameApp() {
   const { data: capabilities } = useCapabilities({ account: address });
 
   const sendGMTransaction = async () => {
-    // Use our internal proxy endpoint to keep the key safe
-    const paymasterServiceUrl = "/api/paymaster";
+    // Use our internal proxy endpoint to keep the key safe.
+    // The wallet extension requires an absolute URL for the paymaster service.
+    const paymasterServiceUrl = `${window.location.origin}/api/paymaster`;
 
     // Check if the wallet supports Paymaster on Base Mainnet (8453)
     const baseCapabilities = capabilities?.[8453];
@@ -45,6 +46,7 @@ function GameApp() {
     } : undefined;
 
     sendCalls({
+      chainId: 8453,
       calls: [{
         to: '0xcD0dd3716C5561De47a24949335dF8a8CD8F71a3',
         value: 0n,
