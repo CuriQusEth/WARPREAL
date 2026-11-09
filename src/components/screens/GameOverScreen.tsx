@@ -39,6 +39,7 @@ export const GameOverScreen: React.FC<Props> = ({ score, realmsExplored, onResta
       const attrHex = stringToHex(JSON.stringify(attr)).replace('0x', '');
       
       const hash = await sendTransactionAsync({
+        chainId: 8453, // Base Mainnet (Denim)
         to: '0x0000000000000000000000000000000000000000', // Burn/Null address for demo payload
         value: parseEther('0'),
         data: `0x676d${attrHex}` as `0x${string}` // "gm" + attribution
@@ -86,9 +87,9 @@ export const GameOverScreen: React.FC<Props> = ({ score, realmsExplored, onResta
           <button 
             onClick={submitScoreOnChain}
             disabled={submitting || !!txHash}
-            className="w-full py-4 bg-indigo-600 hover:bg-indigo-500 border border-indigo-400/50 text-white rounded-xl font-bold uppercase tracking-widest text-xs transition-all disabled:opacity-50 shadow-[0_0_30px_rgba(79,70,229,0.5)]"
+            className="w-full py-4 bg-indigo-600 hover:bg-indigo-500 border border-indigo-400/50 text-white rounded-xl font-bold uppercase tracking-widest text-xs transition-all disabled:opacity-50 shadow-[0_0_30px_rgba(79,70,229,0.5)] flex items-center justify-center gap-2"
           >
-            {submitting ? 'Submitting to Base...' : txHash ? 'Recorded on Base!' : 'Record This Journey On-Chain'}
+            {submitting ? 'Confirming in 200ms on Denim...' : txHash ? 'Included on Base Mainnet (Denim)!' : 'Record This Journey On-Chain'}
           </button>
 
           {txHash && (

@@ -25,9 +25,14 @@ export const TitleScreen: React.FC<Props> = ({ onStart }) => {
         <h1 className="text-7xl md:text-9xl font-black text-transparent bg-clip-text bg-gradient-to-br from-indigo-400 via-purple-400 to-pink-400 mb-4 tracking-tighter title-shadow">
           WARP REALM
         </h1>
-        <p className="text-xl md:text-2xl text-purple-200 mb-12 font-light tracking-widest uppercase">
+        <p className="text-xl md:text-2xl text-purple-200 mb-6 font-light tracking-widest uppercase">
           Become the Realm Weaver
         </p>
+
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full glass border border-indigo-500/30 text-[11px] text-indigo-200 mb-8">
+          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span>Base Mainnet • Denim 200ms Native Blocks</span>
+        </div>
 
         <div className="space-y-4 flex flex-col items-center">
           <button 
